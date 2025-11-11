@@ -1,61 +1,274 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Кіт + Орбіти + Зображення</title>
+  <title>Кіт + Орбіти (Версія Хостингу)</title>
   <style>
-    body {
+    /* --- ЗМІНЕНІ СТИЛІ --- */
+    body, html {
       margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+      width: 100%;
       background-color: #111;
       font-family: sans-serif;
       color: #fff;
-      overflow: hidden;
-      text-align: center;
     }
-
     canvas#c {
       position: fixed;
-      top: 0;
-      left: 0;
+      top: 0; left: 0;
       width: 100vw;
       height: 100vh;
-      z-index: 1;
+      display: block;
+      z-index: 1; /* Орбіти на задньому плані */
     }
-
+    
     .main {
-      position: relative;
+      /* Позиціонування кота, як у вашому оригінальному коді */
+      height: 400px;
+      width: 400px;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2; /* Кіт над орбітами */
+    }
+
+    /* --- БЛОК ДЛЯ СТАТИЧНОГО ЗОБРАЖЕННЯ --- */
+    .static-image-wrapper {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60%; /* Ширина блоку для зручності */
+        max-width: 500px;
+        text-align: center;
+        z-index: 3; /* Зображення над усім */
+    }
+    .static-image-wrapper img {
+        width: 100%; /* Зображення займає всю ширину обгортки */
+        height: auto;
+        display: block;
+        margin-top: 10px;
+        border-radius: 10px;
+    }
+    
+    /* --- ВЕСЬ ВАШ ОРИГІНАЛЬНИЙ CSS ТУТ --- */
+    @keyframes tail {
+      6.6% { transform: rotate(0); }
+      10% { transform: rotate(10deg); }
+      16.6% { transform: rotate(-5deg); }
+      20% { transform: rotate(30deg); }
+      26.6% { transform: rotate(-2deg); }
+      46.6% { transform: rotate(10deg); }
+      53.3% { transform: rotate(-5deg); }
+      56.6% { transform: rotate(10deg); }
+    }
+
+    @keyframes body {
+      6.6% { transform: scaleY(1); }
+      10% { transform: scaleY(1.15); }
+      16.6% { transform: scaleY(1); }
+      20% { transform: scaleY(1.25); }
+      26.6% { transform: scaleY(1); }
+      46.6% { transform: scaleY(1.15); }
+      53.3% { transform: scaleY(1); }
+      56.6% { transform: scaleY(1.15); }
+    }
+
+    @keyframes left-whisker {
+      6.6% { transform: rotate(0); }
+      10% { transform: rotate(0deg); }
+      16.6% { transform: rotate(-5deg); }
+      20% { transform: rotate(0deg); }
+      26.6% { transform: rotate(0deg); }
+      46.6% { transform: rotate(10deg); }
+      53.3% { transform: rotate(-5deg); }
+      56.6% { transform: rotate(10deg); }
+    }
+
+    @keyframes right-whisker {
+      6.6% { transform: rotate(180deg); }
+      10% { transform: rotate(190deg); }
+      16.6% { transform: rotate(180deg); }
+      20% { transform: rotate(175deg); }
+      26.6% { transform: rotate(190deg); }
+      46.6% { transform: rotate(180deg); }
+      53.3% { transform: rotate(185deg); }
+      56.6% { transform: rotate(175deg); }
+    }
+
+    @keyframes left-ear {
+      0% { transform: rotate(-20deg); }
+      6.6% { transform: rotate(-6deg); }
+      13.3% { transform: rotate(-15deg); }
+      26.6% { transform: rotate(-15deg); }
+      33.3% { transform: rotate(-30deg); }
+      40% { transform: rotate(-30deg); }
+      46.6% { transform: rotate(0deg); }
+      53.3% { transform: rotate(0deg); }
+      60% { transform: rotate(-15deg); }
+      80% { transform: rotate(-15deg); }
+      93.3% { transform: rotate(-6deg); }
+      100% { transform: rotate(-6deg); }
+    }
+
+    @keyframes right-ear {
+      0%, 6.6% { transform: rotateZ(-16deg); }
+      13.3%, 26.6% { transform: rotateZ(-19deg); }
+      33.3%, 40.6%, 63.3% { transform: rotateZ(-30deg); }
+      36.6%, 38%, 41.3%, 46.6%, 53.3%, 61.3%, 64%, 80% { transform: rotateZ(-19deg); }
+      60.6% { transform: rotateZ(-30deg); }
+      93.3%, 100% { transform: rotateZ(-16deg); }
+    }
+
+    .main .stand {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%);
+      height: 20px;
+      width: 200px;
+      border-radius: 20px;
+      background-color: #fd6e72;
       z-index: 2;
-      margin-top: 50px;
     }
 
-    /* Галерея зображень */
-    .gallery {
-      display: flex;
-      justify-content: center;
-      margin-top: 500px; /* щоб не перекривало canvas */
-      gap: 20px;
+    .main .stand::after {
+      content: "";
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translate(-50%);
+      height: 10px;
+      width: 50px;
+      border-radius: 20px;
+      background-color: #fdf9de;
+      box-shadow: 0 10px 0 #fdf9de, 0 20px 0 #fdf9de, 0 30px 0 #fdf9de, 0 40px 0 #fdf9de, 0 50px 0 #fdf9de;
     }
 
-    .gallery img {
-      width: 120px;
-      height: auto;
-      border-radius: 12px;
-      border: 2px solid #fd6e72;
-      cursor: pointer;
-      transition: transform 0.3s, box-shadow 0.3s;
+    .cat {
+      width: 110px;
+      height: 50px;
+      position: absolute;
+      top: calc(50% - 50px);
+      right: 130px;
     }
 
-    .gallery img:hover {
-      transform: scale(1.1);
-      box-shadow: 0 0 20px #fd6e72;
+    .body {
+      width: 110px;
+      height: 50px;
+      background-color: #745260;
+      position: absolute;
+      border-top-left-radius: 100px;
+      border-top-right-radius: 100px;
+      animation: body 12s infinite;
     }
 
-    h2 {
-      margin-top: 20px;
+    .head {
+      width: 70px;
+      height: 35px;
+      background-color: #745260;
+      position: absolute;
+      top: calc(50% - 10px);
+      left: -40px;
+      border-top-left-radius: 80px;
+      border-top-right-radius: 80px;
     }
 
-    /* Контрольна панель для canvas */
+    .ear {
+      position: absolute;
+      left: 4px;
+      top: -4px;
+      width: 0;
+      height: 0;
+      border-left: 12px solid transparent;
+      border-right: 12px solid transparent;
+      border-bottom: 20px solid #745260;
+      transform: rotate(-30deg);
+      animation: left-ear 12s infinite;
+    }
+
+    .ear + .ear {
+      animation: right-ear 12s infinite;
+      top: -12px;
+      left: 30px;
+    }
+
+    .face {
+      position: relative;
+    }
+
+    .nose {
+      position: absolute;
+      bottom: 10px;
+      left: -10px;
+      background-color: #fd6e72;
+      height: 5px;
+      width: 5px;
+      border-radius: 50%;
+    }
+
+    .whisker-container {
+      position: absolute;
+      bottom: 5px;
+      left: -36px;
+      width: 20px;
+      height: 10px;
+      transform-origin: right;
+      animation: left-whisker 12s infinite;
+    }
+
+    .whisker-container:nth-child(2) {
+      left: -20px;
+      bottom: 12px;
+      transform: rotate(180deg);
+      animation: right-whisker 12s infinite;
+    }
+
+    .whisker {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      border: 1px solid #fdf9de;
+      transform-origin: 100% 0;
+    }
+
+    .whisker:last-child {
+      transform: rotate(-20deg);
+    }
+
+    .tail-container {
+      position: absolute;
+      right: 0;
+      bottom: -13px;
+      z-index: 3;
+    }
+
+    .tail {
+      position: absolute;
+      height: 30px;
+      width: 14px;
+      bottom: -10px;
+      right: 0;
+      border-bottom-right-radius: 5px;
+      background: #745260;
+      z-index: 0;
+    }
+
+    .tail > .tail {
+      animation: tail 12s infinite;
+      height: 100%;
+      width: 14px;
+      transform-origin: left;
+      border-bottom-left-radius: 20px 20px;
+      border-bottom-right-radius: 20px 20px;
+      border-top-right-radius: 40px;
+    }
+
+    /* --- КОНТРОЛИ ДЛЯ ORBS --- */
     #control-panel {
       position: fixed;
       top: 10px;
@@ -83,7 +296,35 @@
 </head>
 <body>
 
-<!-- Контрольна панель -->
+<div class="main">
+  <div class="stand"></div>
+  <div class="cat">
+    <div class="body"></div>
+    <div class="tail-container">
+      <div class="tail">
+        <div class="tail"></div>
+      </div>
+    </div>
+    <div class="head">
+      <div class="ear"></div>
+      <div class="ear"></div>
+      <div class="face">
+        <div class="nose"></div>
+        <div class="whisker-container">
+          <div class="whisker"></div>
+          <div class="whisker"></div>
+          <div class="whisker"></div>
+        </div>
+        <div class="whisker-container">
+          <div class="whisker"></div>
+          <div class="whisker"></div>
+          <div class="whisker"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="control-panel">
   <p>Click and drag to make more!</p>
   <label>Trails: </label>
@@ -92,73 +333,132 @@
   <a href="https://codepen.io/jackrugile/pen/aCzHs" target="_blank" style="color:#ccc;">View Version 2</a>
 </div>
 
-<!-- Canvas для орбіт -->
-<canvas id="c"></canvas>
-
-<!-- Галерея зображень -->
-<h2>Моє зображення у трьох форматах</h2>
-<div class="gallery">
-  <img src="images/cat.png" alt="Кіт PNG">
-  <img src="images/cat.jpg" alt="Кіт JPG">
-  <img src="images/cat.webp" alt="Кіт WEBP">
+<div class="static-image-wrapper">
+    <img src="URL_ВАШОГО_ЗОБРАЖЕННЯ_ТУТ" alt="Моє зображення у трьох форматах">
 </div>
 
+<canvas id="c"></canvas>
+
 <script>
-// --- Код орбіт (як у вашому прикладі) ---
+// ВЕСЬ ВАШ ОРИГІНАЛЬНИЙ JAVASCRIPT ТУТ
 window.requestAnimFrame = (function(){
-  return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function(callback){ window.setTimeout(callback, 1000/60); };
+  return window.requestAnimationFrame   ||
+         window.webkitRequestAnimationFrame ||
+         window.mozRequestAnimationFrame    ||
+         window.oRequestAnimationFrame      ||
+         window.msRequestAnimationFrame     ||
+         function(callback){
+           window.setTimeout(callback, 1000 / 60);
+         };
 })();
+
+document.onselectstart = function() { return false; };
 
 var c = document.getElementById('c');
 var ctx = c.getContext('2d');
+
 var dpr = window.devicePixelRatio || 1;
 var cw = window.innerWidth;
 var ch = window.innerHeight;
-c.width = cw*dpr;
-c.height = ch*dpr;
-ctx.scale(dpr,dpr);
+
+c.width = cw * dpr;
+c.height = ch * dpr;
+ctx.scale(dpr, dpr);
+
 ctx.lineCap = 'round';
 
 var orbs = [];
+
 var trailCB = document.getElementById('trail');
 var trail = trailCB.checked;
 var clearer = document.getElementById('clear');
 
-function rand(rMi,rMa){ return Math.floor(Math.random()*(rMa-rMi+1))+rMi; }
-
-function createOrb(mx,my){
-  var dx=(cw/2)-mx, dy=(ch/2)-my;
-  var dist=Math.sqrt(dx*dx+dy*dy);
-  var angle=Math.atan2(dy,dx);
-  orbs.push({
-    x:mx, y:my, lastX:mx, lastY:my, hue:0, colorAngle:0, angle:angle+Math.PI/2,
-    size:rand(1,3)/2, centerX:cw/2, centerY:ch/2, radius:dist, speed:(rand(5,10)/1000)*(dist/750)+.015,
-    alpha:1-Math.abs(dist)/cw,
-    draw:function(){ ctx.strokeStyle='hsla('+this.colorAngle+',100%,50%,1)'; ctx.lineWidth=this.size; ctx.beginPath(); ctx.moveTo(this.lastX,this.lastY); ctx.lineTo(this.x,this.y); ctx.stroke(); },
-    update:function(){
-      this.lastX=this.x; this.lastY=this.y;
-      this.x=this.centerX + Math.sin(this.angle*-1)*this.radius;
-      this.y=this.centerY + Math.cos(this.angle*-1)*this.radius;
-      this.angle += this.speed;
-      var mx = this.x, my = this.y;
-      var dx=cw/2-mx, dy=ch/2-my;
-      var slope = -(dy/(dx||0.0001));
-      var rad=Math.atan(slope);
-      var angleH=Math.floor(rad*(180/Math.PI));
-      if(dx<0 && dy<0){angleH+=180;}
-      if(dx<0 && dy>0){angleH+=180;}
-      if(dx>0 && dy>0){angleH+=360;}
-      if(isNaN(angleH)){angleH=0;}
-      this.colorAngle=angleH;
-    }
-  });
+function rand(rMi, rMa){
+  return Math.floor(Math.random() * (rMa - rMi + 1)) + rMi;
 }
 
-function orbGo(e){ createOrb(e.pageX - c.offsetLeft, e.pageY - c.offsetTop); }
-function turnOnMove(){ c.addEventListener('mousemove', orbGo, false); }
-function turnOffMove(){ c.removeEventListener('mousemove', orbGo, false); }
-function toggleTrails(){ trail = trailCB.checked; }
-function clear(){ orbs = []; }
+function createOrb(mx, my){
+  var dx = (cw/2) - mx;
+  var dy = (ch/2) - my;
+  var dist = Math.sqrt(dx * dx + dy * dy);
+  var angle = Math.atan2(dy, dx);
+
+  orbs.push({
+    x: mx,
+    y: my,
+    lastX: mx,
+    lastY: my,
+    hue: 0,
+    colorAngle: 0,
+    angle: angle + Math.PI/2,
+    size: rand(1,3)/2,
+    centerX: cw/2,
+    centerY: ch/2,
+    radius: dist,
+    speed: (rand(5,10)/1000)*(dist/750)+.015,
+    alpha: 1 - Math.abs(dist)/cw,
+    draw: function() {
+      ctx.strokeStyle = 'hsla('+this.colorAngle+',100%,50%,1)';
+      ctx.lineWidth = this.size;
+      ctx.beginPath();
+      ctx.moveTo(this.lastX, this.lastY);
+      ctx.lineTo(this.x, this.y);
+      ctx.stroke();
+    },
+    update: function() {
+      var mx = this.x;
+      var my = this.y;
+      this.lastX = this.x;
+      this.lastY = this.y;
+
+      var x1 = cw/2;
+      var y1 = ch/2;
+      var x2 = mx;
+      var y2 = my;
+      var rise = y1 - y2;
+      var run = x1 - x2;
+      var slope = -(rise / run);
+      var radian = Math.atan(slope);
+      var angleH = Math.floor(radian * (180 / Math.PI));
+
+      if(x2 < x1 && y2 < y1){angleH += 180;}
+      if(x2 < x1 && y2 > y1){angleH += 180;}
+      if(x2 > x1 && y2 > y1){angleH += 360;}
+      if(y2 < y1 && slope === -Infinity){angleH = 90;}
+      if(y2 > y1 && slope === Infinity){angleH = 270;}
+      if(x2 < x1 && slope === 0){angleH = 180;}
+      if(isNaN(angleH)){angleH = 0;}
+
+      this.colorAngle = angleH;
+
+      this.x = this.centerX + Math.sin(this.angle * -1) * this.radius;
+      this.y = this.centerY + Math.cos(this.angle * -1) * this.radius;
+      this.angle += this.speed;
+    }
+  });
+}
+
+function orbGo(e){
+  var mx = e.pageX - c.offsetLeft;
+  var my = e.pageY - c.offsetTop;
+  createOrb(mx, my);
+}
+
+function turnOnMove(){
+  c.addEventListener('mousemove', orbGo, false);
+}
+
+function turnOffMove(){
+  c.removeEventListener('mousemove', orbGo, false);
+}
+
+function toggleTrails(){
+  trail = trailCB.checked;
+}
+
+function clear(){
+  orbs = [];
+}
 
 c.addEventListener('mousedown', orbGo, false);
 c.addEventListener('mousedown', turnOnMove, false);
@@ -166,16 +466,31 @@ c.addEventListener('mouseup', turnOffMove, false);
 trailCB.addEventListener('change', toggleTrails, false);
 clearer.addEventListener('click', clear, false);
 
-var count = 100; while(count--){ createOrb(cw/2, ch/2 + (count*2)); }
+var count = 100;
+while(count--){
+  createOrb(cw/2, ch/2 + (count*2));
+}
 
 function loop(){
-  requestAnimFrame(loop);
-  if(trail){ ctx.fillStyle='rgba(0,0,0,0.1)'; ctx.fillRect(0,0,cw,ch); }
-  else{ ctx.clearRect(0,0,cw,ch); }
-  orbs.forEach(orb => { for(let i=0;i<3;i++){ orb.update(); orb.draw(); } });
+  window.requestAnimFrame(loop);
+  if(trail){
+    ctx.fillStyle = 'rgba(0,0,0,0.1)';
+    ctx.fillRect(0, 0, cw, ch);
+  } else {
+    ctx.clearRect(0, 0, cw, ch);
+  }
+  var i = orbs.length;
+  while(i--){
+    var orb = orbs[i];
+    var updateCount = 3;
+    while(updateCount--){
+      orb.update();
+      orb.draw(ctx);
+    }
+  }
 }
+
 loop();
 </script>
-
 </body>
 </html>
